@@ -47,8 +47,8 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            cursor: none !important;
-            /* Custom Cursor */
+            /* cursor: none !important; */
+            max-width: 100%;
         }
 
         ::-webkit-scrollbar {
@@ -103,7 +103,7 @@
         }
 
         /* --- 4. Custom Cursor --- */
-        .cursor-dot {
+        /* .cursor-dot {
             width: 8px;
             height: 8px;
             background: #3b82f6;
@@ -122,7 +122,7 @@
             z-index: 9999;
             pointer-events: none;
             transition: transform 0.15s ease-out;
-        }
+        } */
 
         /* --- 5. Text & Glow Effects --- */
         .text-gradient {
@@ -131,12 +131,19 @@
             -webkit-text-fill-color: transparent;
         }
 
+        html{
+            overflow-x: hidden;
+        }
+
+        #home {
+            overflow: hidden;
+        }
+
         .glow-node {
             position: absolute;
             width: 300px;
             height: 300px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
-            border-radius: 50%;
+            max-width: 100%;
             pointer-events: none;
         }
 
@@ -242,9 +249,6 @@
                 </div>
                 
             </div>
-            <!-- <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce opacity-30">
-                                                                                                    <i class="fa-solid fa-chevron-down text-2xl"></i>
-                                                                                                </div> -->
             <div class="absolute bottom-10 w-full flex justify-center animate-bounce opacity-30">
                 <i class="fa-solid fa-chevron-down text-2xl"></i>
             </div>
@@ -591,24 +595,39 @@
 
             // 3. Three.js Particles Background
             const initBackground = () => {
-                const container = document.getElementById('canvas-container');
-                const scene = new THREE.Scene();
-                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-                const renderer = new THREE.WebGLRenderer({ alpha: true });
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                container.appendChild(renderer.domElement);
+                    const container = document.getElementById('canvas-container');
+                    const scene = new THREE.Scene();
+                    const camera = new THREE.PerspectiveCamera(
+                        75,
+                        container.clientWidth / container.clientHeight,
+                        0.1,
+                        1000
+                    );
 
-            const geometry = new THREE.BufferGeometry();
-            const vertices = [];
-            for (let i = 0; i < 5000; i++) {
-                vertices.push(THREE.MathUtils.randFloatSpread(2000));
-                vertices.push(THREE.MathUtils.randFloatSpread(2000));
-                vertices.push(THREE.MathUtils.randFloatSpread(2000));
-            }
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-            const particles = new THREE.Points(geometry, new THREE.PointsMaterial({ color: 0x3b82f6, size: 2 }));
-            scene.add(particles);
-            camera.position.z = 1000;
+                    const renderer = new THREE.WebGLRenderer({ alpha: true });
+
+                    // ✅ FIX HERE
+                    renderer.setSize(container.clientWidth, container.clientHeight);
+                    container.appendChild(renderer.domElement);
+
+                    const geometry = new THREE.BufferGeometry();
+                    const vertices = [];
+
+                    for (let i = 0; i < 5000; i++) {
+                        vertices.push(THREE.MathUtils.randFloatSpread(2000));
+                        vertices.push(THREE.MathUtils.randFloatSpread(2000));
+                        vertices.push(THREE.MathUtils.randFloatSpread(2000));
+                    }
+
+                    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+
+                    const particles = new THREE.Points(
+                        geometry,
+                        new THREE.PointsMaterial({ color: 0x3b82f6, size: 2 })
+                    );
+
+                    scene.add(particles);
+                    camera.position.z = 1000;
 
                     const animate = () => {
                         requestAnimationFrame(animate);
@@ -616,13 +635,13 @@
                         renderer.render(scene, camera);
                     };
                     animate();
+
                     window.addEventListener('resize', () => {
-                        camera.aspect = window.innerWidth / window.innerHeight;
+                        camera.aspect = container.clientWidth / container.clientHeight;
                         camera.updateProjectionMatrix();
-                        renderer.setSize(window.innerWidth, window.innerHeight);
+                        renderer.setSize(container.clientWidth, container.clientHeight);
                     });
                 };
-                initBackground();
 
             // 4. GSAP Scroll Animations
             gsap.registerPlugin(ScrollTrigger);
