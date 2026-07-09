@@ -1,792 +1,503 @@
 <!DOCTYPE html>
-<html lang="km" class="dark">
+<html lang="km">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PHUK RICHHAT</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- FIX 1: Removed duplicate/broken <link> tag. Only one Font Awesome import needed. -->
+    <title>Phuk Richhat — Frontend Developer</title>
+
     <link
-        href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@100;300;400;600;700&family=Plus+Jakarta+Sans:wght@200;400;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Kantumruy+Pro:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- FIX 7: Added AOS library since data-aos attributes are used in HTML -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3b82f6',
-                        secondary: '#8b5cf6',
-                        accent: '#00f2ff',
-                        dark: '#020617',
-                        card: 'rgba(15, 23, 42, 0.6)',
-                    },
-                    fontFamily: {
-                        khmer: ['Kantumruy Pro', 'sans-serif'],
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                    },
-                    animation: {
-                        'spin-slow': 'spin 8s linear infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        /* --- 1. Global Reset & Custom Scrollbar --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            max-width: 100%;
-        }
-
-        ::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #020617;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
-            border-radius: 20px;
-        }
-
-        body {
-            background-color: #020617;
-            color: #e2e8f0;
-            overflow-x: hidden;
-            font-family: 'Plus Jakarta Sans', 'Kantumruy Pro', sans-serif;
-        }
-
-        /* --- 2. Advanced Glassmorphism --- */
-        .glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .glass-card {
-            background: rgba(15, 23, 42, 0.3);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .glass-card:hover {
-            background: rgba(15, 23, 42, 0.6);
-            border-color: rgba(59, 130, 246, 0.5);
-            box-shadow: 0 0 40px rgba(59, 130, 246, 0.1);
-        }
-
-        /* --- 3. Dynamic Background --- */
-        #canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* --- 4. FIX 4: Custom Cursor Styles (were missing entirely) --- */
-        .cursor-dot {
-            width: 8px;
-            height: 8px;
-            background: #3b82f6;
-            border-radius: 50%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 99999;
-            transform: translate(-50%, -50%);
-        }
-
-        .cursor-outline {
-            width: 32px;
-            height: 32px;
-            border: 2px solid rgba(59, 130, 246, 0.5);
-            border-radius: 50%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 99998;
-            transform: translate(-50%, -50%);
-            transition: border-color 0.3s;
-        }
-
-        /* --- 5. Text & Glow Effects --- */
-        .text-gradient {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #00f2ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        html {
-            overflow-x: hidden;
-        }
-
-        #home {
-            overflow: hidden;
-        }
-
-        /* FIX 5: Added visual properties to glow-node so it actually glows */
-        .glow-node {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            max-width: 100%;
-            pointer-events: none;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
-            border-radius: 50%;
-            filter: blur(40px);
-        }
-
-        /* --- 6. Bento Grid Styles --- */
-        .bento-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(2, 200px);
-            gap: 1.5rem;
-        }
-
-        @media (max-width: 768px) {
-            .bento-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto;
-            }
-        }
-
-        /* --- 7. Loading Screen --- */
-        #loader {
-            position: fixed;
-            inset: 0;
-            background: #020617;
-            z-index: 10001;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="font-khmer">
-    <div id="loader">
-        <div class="relative">
-            <div class="w-24 h-24 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs tracking-widest uppercase">
-                RICHHAT
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+    <header id="navbar">
+        <div class="container">
+            <nav>
+                <a href="#home" class="logo">Richhat<span class="dot">.</span></a>
+
+                <ul class="nav-links">
+                    <li><a href="#home">ទំព័រដើម</a></li>
+                    <li><a href="#about">អំពីខ្ញុំ</a></li>
+                    <li><a href="#skills">ជំនាញ</a></li>
+                    <li><a href="#projects">ស្នាដៃ</a></li>
+                    <li><a href="#education">ការសិក្សា</a></li>
+                    <li><a href="#contact">ទំនាក់ទំនង</a></li>
+                </ul>
+
+                <div style="display:flex; align-items:center; gap:0.8rem;">
+                    <a href="#contact" class="btn-outline" style="display:none" id="hireBtn">ទាក់ទងខ្ញុំ</a>
+                    <button class="mobile-btn" id="menuToggle" aria-label="Toggle menu">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+            </nav>
+
+            <div id="mobileMenu">
+                <a href="#home">ទំព័រដើម</a>
+                <a href="#about">អំពីខ្ញុំ</a>
+                <a href="#skills">ជំនាញ</a>
+                <a href="#projects">ស្នាដៃ</a>
+                <a href="#education">ការសិក្សា</a>
+                <a href="#contact">ទំនាក់ទំនង</a>
             </div>
         </div>
-    </div>
-
-    <div id="canvas-container"></div>
-    <!-- FIX 4: cursor elements now have proper CSS styles defined above -->
-    <div class="cursor-dot" id="dot"></div>
-    <div class="cursor-outline" id="outline"></div>
-
-    <header class="fixed mt-5 hidden lg:block  mt-1 top-0 left-0 w-full z-50 px-6 py-6 transition-all duration-500" id="navbar">
-        <nav class="max-w-7xl mx-auto flex justify-between items-center glass px-8 py-4 rounded-3xl">
-            <a href="#" class="text-2xl font-black tracking-tighter uppercase font-sans">
-                Rich<span class="text-primary">hat</span>.
-            </a>
-            <ul class="hidden lg:flex items-center gap-10 text-[20px] font-bold uppercase tracking-[0.1em]">
-                <li><a href="#home" class="nav-link hover:text-primary transition-all">ទំព័រដើម</a></li>
-                <li><a href="#about" class="nav-link hover:text-primary transition-all">អំពីខ្ញុំ</a></li>
-                <li><a href="#skills" class="nav-link hover:text-primary transition-all">ជំនាញ</a></li>
-                <li><a href="#projects" class="nav-link hover:text-primary transition-all">ស្នាដៃ</a></li>
-                <li><a href="#contact" class="nav-link hover:text-primary transition-all">ទំនាក់ទំនង</a></li>
-            </ul>
-            <div class="flex items-center gap-4">
-                <a href="#contact"
-                    class="hidden md:block bg-primary px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] transition-all">
-                    Hire Me
-                </a>
-            </div>
-        </nav>
     </header>
 
     <main>
-        <section id="home" class="min-h-screen flex flex-col justify-center items-center relative px-6 overflow-hidden">
-            <!-- FIX 5: glow-node now has visual background/blur defined in CSS -->
-            <div class="glow-node top-1/4 left-1/4 animate-pulse-slow"></div>
-            <div class="glow-node bottom-1/4 right-1/4 animate-pulse-slow" style="animation-delay: 2s"></div>
 
-            <div class="text-center z-10" id="hero-content">
-                <div class="inline-flex items-center gap-2 mt-3 glass px-4 py-2 rounded-full" data-aos="fade-down">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute h-full w-full rounded-full bg-accent opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
-                    </span>
-                    <span class="text-[10px] font-bold tracking-[0.3em] text-accent">Available for new
-                        projects</span>
-                </div>
-                <h1 class="text-6xl mt-5 md:text-[120px] font-black leading-none font-sans">
-                    FRONT END <br>
-                    <span class="text-gradient italic">DEVELOPER</span>
-                </h1>
+        <!-- ================= HOME ================= -->
+        <section id="home">
+            <div class="container">
+                <div class="hero-grid">
 
-                <div class="prifile d-flex justify-content-center mb-5 mt-5">
-                    <img class="rounded-2" width="200" src="./PhotoID.jpg" alt="Phuk Richhat">
-                </div>
+                    <div class="reveal in">
+                        <span class="status-pill"><span class="status-dot"></span> Available for new projects</span>
 
-                <p class="max-w-2xl mx-auto text-gray-400 text-lg md:text-xl font-medium leading-relaxed mb-12">
-                    ជម្រាបសួរ! ខ្ញុំបាទ <span class="text-white font-bold">ភុក រីឆាត</span>
-                    ជាអ្នកអភិវឌ្ឍន៍វេបសាយជំនាន់ថ្មី
-                    ដែលនាំមកនូវដំណោះស្រាយបច្ចេកវិទ្យាដ៏ទំនើប និងភាពច្នៃប្រឌិតខ្ពស់។
-                </p>
+                        <h1 class="hero-title">
+                            អ្នកអភិវឌ្ឍន៍<br>
+                            <em>Frontend</em> ដែលយក<br>
+                            ចិត្តទុកដាក់ខ្ពស់
+                        </h1>
 
-                <div class="flex flex-wrap justify-center gap-6">
-                    <a href="#projects" class="btn fw-bold btn-primary py-3 px-5 fw-medium fs-6">View Project</a>
-                    <a href="#contact" class="btn fw-bold btn-primary py-3 px-5 fw-medium fs-6">Contact</a>
-                </div>
-            </div>
-            <div class="mt-5 w-full flex justify-center animate-bounce opacity-100">
-                <i class="fa-solid fa-chevron-down text-2xl"></i>
-            </div>
-        </section>
-
-        <section id="about" class="py-32 px-6 max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-8 glass-card p-10 md:p-16 rounded-[3rem] flex flex-col justify-between">
-                    <div>
-                        <h2 class="text-sm font-black text-primary tracking-[0.2em] uppercase mb-6">About Me</h2>
-                        <h3 class="text-4xl md:text-5xl font-bold mb-8 leading-tight">
-                            កសាងបទពិសោធន៍ឌីជីថល <br> តាមរយៈ <span class="text-primary italic">Code & Art</span>
-                        </h3>
-                        <p class="text-gray-400 text-lg leading-relaxed mb-8">
-                            ខ្ញុំជាអ្នកសិក្សាផ្នែកវិទ្យាសាស្ត្រកុំព្យូទ័រ ដែលមានចំណង់ចំណូលចិត្តខ្លាំងលើផ្នែក Frontend
-                            Development និង Embedded Systems។
-                            រាល់កូដដែលខ្ញុំសរសេរ មិនមែនគ្រាន់តែឱ្យវាដំណើរការប៉ុណ្ណោះទេ
-                            ប៉ុន្តែគឺដើម្បីផ្តល់នូវបទពិសោធន៍ដ៏ល្អបំផុតសម្រាប់អ្នកប្រើប្រាស់។
+                        <p class="hero-sub khmer">
+                            ជម្រាបសួរ! ខ្ញុំបាទ <b>ភុក រីឆាត</b> — និស្សិតផ្នែកព័ត៌មានវិទ្យា
+                            និងជាអ្នកអភិវឌ្ឍន៍វេបសាយ ដែលផ្តោតលើការសរសេរកូដស្អាត ដំណោះស្រាយច្បាស់លាស់
+                            និងបទពិសោធន៍ដ៏ល្អសម្រាប់អ្នកប្រើប្រាស់។
                         </p>
-                    </div>
-                    <div class="flex flex-wrap gap-8">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 glass rounded-2xl flex items-center justify-center text-primary">
-                                <i class="fa-solid fa-code"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold">Clean Code</h4>
-                                <p class="text-xs text-gray-500">Maintainable & Scalable</p>
-                            </div>
+
+                        <div class="hero-cta">
+                            <a href="#projects" class="btn-solid">មើលស្នាដៃ <i class="fa-solid fa-arrow-right"></i></a>
+                            <a href="#contact" class="btn-outline">ទំនាក់ទំនងខ្ញុំ</a>
                         </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 glass rounded-2xl flex items-center justify-center text-accent">
-                                <i class="fa-solid fa-bolt"></i>
+                    </div>
+
+                    <div class="reveal in" style="transition-delay:0.15s">
+                        <div class="term-card">
+                            <div class="term-bar">
+                                <span class="term-dot" style="background:#EC6A5E"></span>
+                                <span class="term-dot" style="background:#F5BD4F"></span>
+                                <span class="term-dot" style="background:#61C454"></span>
+                                <span class="term-file">profile.json</span>
                             </div>
-                            <div>
-                                <h4 class="font-bold">Fast Delivery</h4>
-                                <p class="text-xs text-gray-500">Optimized Performance</p>
+                            <div class="term-body">
+                                <img src="./PhotoID.jpg" alt="Phuk Richhat" class="term-photo"
+                                    onerror="this.style.display='none'">
+                                <div><span class="punc">{</span></div>
+                                <div>&nbsp;&nbsp;<span class="key">"name"</span><span class="punc">:</span> <span
+                                        class="str">"ភុក រីឆាត"</span><span class="punc">,</span></div>
+                                <div>&nbsp;&nbsp;<span class="key">"role"</span><span class="punc">:</span> <span
+                                        class="str">"Frontend Developer"</span><span class="punc">,</span></div>
+                                <div>&nbsp;&nbsp;<span class="key">"stack"</span><span class="punc">:</span> <span
+                                        class="punc">[</span><span class="str">"Vue"</span><span class="punc">,</span>
+                                    <span class="str">"Laravel"</span><span class="punc">,</span> <span
+                                        class="str">"Tailwind"</span><span class="punc">]</span><span
+                                        class="punc">,</span></div>
+                                <div>&nbsp;&nbsp;<span class="key">"based_in"</span><span class="punc">:</span> <span
+                                        class="str">"Phnom Penh, KH"</span><span class="punc">,</span></div>
+                                <div>&nbsp;&nbsp;<span class="key">"status"</span><span class="punc">:</span> <span
+                                        class="str">"available"</span></div>
+                                <div><span class="punc">}</span><span class="cursor-blink"></span></div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="lg:col-span-4 grid grid-cols-1 gap-6">
-                    <div class="glass-card p-8 rounded-[2.5rem] text-center flex flex-col items-center justify-center">
-                        <span class="text-6xl font-black text-gradient counter" data-target="1">0</span>
-                        <p class="text-[20px] uppercase tracking-[0.1em] font-bold text-gray-500 mt-4">ឆ្នាំនៃបទពិសោធន៍
-                        </p>
-                    </div>
-                    <div
-                        class="glass-card p-8 rounded-[2.5rem] text-center flex flex-col items-center justify-center bg-primary/5">
-                        <span class="text-6xl font-black text-white counter" data-target="1">0</span>
-                        <p class="text-[20px] uppercase tracking-[0.1em] font-bold text-gray-500 mt-4">គម្រោងជោគជ័យ</p>
-                    </div>
+
                 </div>
             </div>
         </section>
 
-        <section id="skills" class="relative py-5 bg-dark/50 overflow-hidden">
-            <!-- FIX 6: Stars canvas now has JS to draw on it (see script below) -->
-            <canvas id="stars" class="absolute inset-0 w-full h-full"></canvas>
-
-            <div class="relative z-10 container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-sm font-black text-primary tracking-widest uppercase mb-4">Stack & Tools</h2>
-                    <h3 class="text-4xl md:text-5xl font-bold text-white">បច្ចេកវិទ្យាដែលខ្ញុំចេះ</h3>
+        <!-- ================= ABOUT ================= -->
+        <section id="about">
+            <div class="container">
+                <div class="section-head reveal">
+                    <span class="eyebrow">About</span>
+                    <h2 class="khmer">កសាងបទពិសោធន៍ឌីជីថលតាមរយៈ <em style="font-style:italic; color:var(--accent);">Code
+                            &amp; Craft</em></h2>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8">
-                    <!-- HTML -->
-                    <div
-                        class="skill-card p-6 rounded-3xl flex flex-col items-center justify-center group bg-white/10 border border-white/20 shadow-lg transform transition-all duration-500 hover:scale-105 hover:shadow-[0_0_25px_rgba(255,69,0,0.7)]">
-                        <div
-                            class="w-16 h-16 rounded-xl flex items-center justify-center mb-4 bg-red-500/10 group-hover:bg-red-500 transition-colors duration-500">
-                            <i class="fab fa-html5 text-3xl text-red-500 group-hover:text-white"></i>
+                <div class="about-grid">
+                    <div class="card about-text reveal">
+                        <p class="khmer">
+                            ខ្ញុំជាអ្នកសិក្សាផ្នែកព័ត៌មានវិទ្យា ដែលមានចំណង់ចំណូលចិត្តខ្ពស់លើការអភិវឌ្ឍន៍
+                            <b>Full-Stack Web (Vue.js, Laravel)</b>, <b>UI/UX Design</b> និង
+                            <b>Embedded Systems (Arduino)</b>។
+                        </p>
+                        <p class="khmer">
+                            រាល់កូដដែលខ្ញុំសរសេរ មិនមែនគ្រាន់តែដើម្បីឱ្យវាដំណើរការប៉ុណ្ណោះទេ ប៉ុន្តែគឺដើម្បីផ្តល់នូវ
+                            ដំណោះស្រាយដ៏មានប្រសិទ្ធភាព និងបទពិសោធន៍ដ៏ល្អឥតខ្ចោះសម្រាប់អ្នកប្រើប្រាស់។
+                        </p>
+
+                        <div class="badge-row">
+                            <div class="badge">
+                                <div class="badge-icon"><i class="fa-solid fa-code"></i></div>
+                                <div>
+                                    <h4>Clean Code</h4>
+                                    <p>Maintainable & Scalable</p>
+                                </div>
+                            </div>
+                            <div class="badge">
+                                <div class="badge-icon"><i class="fa-solid fa-bolt"></i></div>
+                                <div>
+                                    <h4>Fast Delivery</h4>
+                                    <p>Optimized Performance</p>
+                                </div>
+                            </div>
                         </div>
-                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-300 group-hover:text-white">
-                            HTML</h4>
                     </div>
-                    <!-- CSS -->
-                    <div
-                        class="skill-card p-6 rounded-3xl flex flex-col items-center justify-center group bg-white/10 border border-white/20 shadow-lg transform transition-all duration-500 hover:scale-105 hover:shadow-[0_0_25px_rgba(0,123,255,0.7)]">
-                        <div
-                            class="w-16 h-16 rounded-xl flex items-center justify-center mb-4 bg-blue-500/10 group-hover:bg-blue-500 transition-colors duration-500">
-                            <i class="fab fa-css3-alt text-3xl text-blue-500 group-hover:text-white"></i>
+
+                    <div style="display:grid; gap:2rem; grid-template-columns:1fr 1fr;">
+                        <div class="card stat-card reveal" style="grid-column:1 / -1;">
+                            <span class="stat-num counter" data-target="1">0</span>
+                            <span class="stat-label khmer">ឆ្នាំនៃបទពិសោធន៍</span>
                         </div>
-                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-300 group-hover:text-white">CSS
-                        </h4>
-                    </div>
-                    <!-- Bootstrap -->
-                    <div
-                        class="skill-card p-6 rounded-3xl flex flex-col items-center justify-center group bg-white/10 border border-white/20 shadow-lg transform transition-all duration-500 hover:scale-105 hover:shadow-[0_0_25px_rgba(130,60,200,0.7)]">
-                        <div
-                            class="w-16 h-16 rounded-xl flex items-center justify-center mb-4 bg-purple-500/10 group-hover:bg-purple-500 transition-colors duration-500">
-                            <i class="fab fa-bootstrap text-3xl text-purple-500 group-hover:text-white"></i>
+                        <div class="card stat-card reveal" style="grid-column:1 / -1;">
+                            <span class="stat-num counter" data-target="5">0</span>
+                            <span class="stat-label khmer">គម្រោងជោគជ័យ</span>
                         </div>
-                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-300 group-hover:text-white">
-                            Bootstrap</h4>
                     </div>
-                    <!-- JavaScript -->
-                    <div
-                        class="skill-card p-6 rounded-3xl flex flex-col items-center justify-center group bg-white/10 border border-white/20 shadow-lg transform transition-all duration-500 hover:scale-105 hover:shadow-[0_0_25px_rgba(240,219,79,0.7)]">
-                        <div
-                            class="w-16 h-16 rounded-xl flex items-center justify-center mb-4 bg-yellow-500/10 group-hover:bg-yellow-500 transition-colors duration-500">
-                            <i class="fab fa-js text-3xl text-yellow-500 group-hover:text-black"></i>
-                        </div>
-                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-300 group-hover:text-white">
-                            JavaScript</h4>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SKILLS ================= -->
+        <section id="skills">
+            <div class="container">
+                <div class="section-head reveal">
+                    <span class="eyebrow">Stack &amp; Tools</span>
+                    <h2 class="khmer">បច្ចេកវិទ្យា និងឧបករណ៍ដែលខ្ញុំប្រើប្រាស់</h2>
+                </div>
+
+                <div class="skills-grid reveal">
+                    <div class="skill-card">
+                        <div class="skill-icon" style="color:#E34F26"><i class="fab fa-html5"></i></div>
+                        <h4>HTML5</h4>
                     </div>
-                    <!-- Vue.js -->
-                    <div
-                        class="skill-card p-6 rounded-3xl flex flex-col items-center justify-center group bg-white/10 border border-white/20 shadow-lg transform transition-all duration-500 hover:scale-105 hover:shadow-[0_0_25px_rgba(66,184,131,0.7)]">
-                        <div
-                            class="w-16 h-16 rounded-xl flex items-center justify-center mb-4 bg-emerald-500/10 group-hover:bg-[#42b883] transition-colors duration-500">
-                            <i class="fab fa-vuejs text-3xl text-[#42b883] group-hover:text-white"></i>
-                        </div>
-                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-300 group-hover:text-white">
-                            Vue.js</h4>
+                    <div class="skill-card">
+                        <div class="skill-icon" style="color:#2965F1"><i class="fab fa-css3-alt"></i></div>
+                        <h4>CSS3</h4>
                     </div>
-                    <!-- TailwindCSS -->
-                    <div
-                        class="skill-card p-6 rounded-3xl flex flex-col items-center justify-center group bg-white/10 border border-white/20 shadow-lg transform transition-all duration-500 hover:scale-105 hover:shadow-[0_0_25px_rgba(56,189,248,0.7)]">
-                        <div
-                            class="w-16 h-16 rounded-xl flex items-center justify-center mb-4 bg-cyan-400/10 group-hover:bg-cyan-400 transition-colors duration-500">
-                            <svg class="w-10 h-10 text-cyan-400 group-hover:text-white transition-colors duration-500"
-                                viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <div class="skill-card">
+                        <div class="skill-icon" style="color:#7952B3"><i class="fab fa-bootstrap"></i></div>
+                        <h4>Bootstrap</h4>
+                    </div>
+                    <div class="skill-card">
+                        <div class="skill-icon" style="color:#D3A518"><i class="fab fa-js"></i></div>
+                        <h4>JavaScript</h4>
+                    </div>
+                    <div class="skill-card">
+                        <div class="skill-icon" style="color:#42B883"><i class="fab fa-vuejs"></i></div>
+                        <h4>Vue.js</h4>
+                    </div>
+                    <div class="skill-card">
+                        <div class="skill-icon" style="color:var(--accent)">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.337 6.182 14.976 4.8 12.001 4.8zm-6 7.2c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624 1.177 1.194 2.538 2.576 5.512 2.576 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.337 13.382 8.976 12 6.001 12z" />
                             </svg>
                         </div>
-                        <h4 class="text-xs font-bold uppercase tracking-widest text-gray-300 group-hover:text-white">
-                            TailwindCSS</h4>
+                        <h4>Tailwind</h4>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="projects" class="py-5 px-6 max-w-7xl mx-auto">
-            <div class="text-center mb-16">
-                <h2 class="text-sm font-black text-primary tracking-[0.5em] uppercase mb-4">Latest Work</h2>
-                <h3 class="text-5xl font-bold font-sans">MY PROJECTS</h3>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-12">
-                <div class="project-card group" >
-                    <div class="relative overflow-hidden rounded-[3rem] glass border-none mb-8">
-                        <img src="./image.png"
-                            alt="Zendo"
-                            class="w-full h-[450px] object-cover group-hover:scale-110 transition-transform duration-1000">
-                        <div
-                            class="absolute inset-0 bg-gradient-to-t from-dark via-transparent to-transparent opacity-80">
-                        </div>
-                        <div class="absolute bottom-10 left-10">
-                            <span
-                                class="px-4 py-2 glass rounded-full text-[10px] font-bold uppercase tracking-widest">E-Commerce</span>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-start px-4">
-                        <div>
-                            <h4 class="text-3xl font-bold mb-2">ZENDO Fashion Website</h4>
-                            <p class="text-gray-500">HTML / CSS / BOOTSTRAP</p>
-                        </div>
-                        <a href="https://project-zendo.vercel.app/" target="_blank"
-                            class="w-14 h-14 bg-white text-dark rounded-full flex items-center justify-center -rotate-45 group-hover:rotate-0 transition-transform duration-500">
-                            <i class="fa-solid fa-arrow-right text-xl"></i>
-                        </a>
-                    </div>
+        <!-- ================= PROJECTS ================= -->
+        <section id="projects">
+            <div class="container">
+                <div class="section-head reveal">
+                    <span class="eyebrow">Latest Work</span>
+                    <h2>ស្នាដៃរបស់ខ្ញុំ</h2>
                 </div>
 
-            <div class="grid md:grid-cols-2 gap-12">
-                <div class="project-card group" >
-                    <div class="relative overflow-hidden rounded-[3rem] glass border-none mb-8">
-                        <img src="./image copy.png"
-                            alt="Zendo"
-                            class="w-full h-[450px] object-cover group-hover:scale-110 transition-transform duration-1000">
-                        <div
-                            class="absolute inset-0 bg-gradient-to-t from-dark via-transparent to-transparent opacity-80">
-                        </div>
-                        <div class="absolute bottom-10 left-10">
-                            <span
-                                class="px-4 py-2 glass rounded-full text-[10px] font-bold uppercase tracking-widest">E-Commerce</span>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-start px-4">
-                        <div>
-                            <h4 class="text-3xl font-bold mb-2">StoreBook Website</h4>
-                            <p class="text-gray-500">Vue.js / BOOTSTRAP</p>
-                        </div>
-                        <a href="https://book-store-web-beob.vercel.app/" target="_blank"
-                            class="w-14 h-14 bg-white text-dark rounded-full flex items-center justify-center -rotate-45 group-hover:rotate-0 transition-transform duration-500">
-                            <i class="fa-solid fa-arrow-right text-xl"></i>
-                        </a>
-                    </div>
-                </div>
-                
-            </div>
-            <div class="grid md:grid-cols-2 gap-12">
-                <div class="project-card group" >
-                    <div class="relative overflow-hidden rounded-[3rem] glass border-none mb-8">
-                        <img src=""
-                            alt="Zendo"
-                            class="w-full h-[450px] object-cover group-hover:scale-110 transition-transform duration-1000">
-                        <div
-                            class="absolute inset-0 bg-gradient-to-t from-dark via-transparent to-transparent opacity-80">
-                        </div>
-                        <div class="absolute bottom-10 left-10">
-                            <span
-                                class="px-4 py-2 glass rounded-full text-[10px] font-bold uppercase tracking-widest">E-Commerce</span>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-start px-4">
-                        <div>
-                            <h4 class="text-3xl font-bold mb-2">StoreBook Website</h4>
-                            <p class="text-gray-500">Vue.js / BOOTSTRAP</p>
-                        </div>
-                        <a href="https://website-ecommerce-sigma.vercel.app/" target="_blank"
-                            class="w-14 h-14 bg-white text-dark rounded-full flex items-center justify-center -rotate-45 group-hover:rotate-0 transition-transform duration-500">
-                            <i class="fa-solid fa-arrow-right text-xl"></i>
-                        </a>
-                    </div>
-                </div>
-                
-            </div>
-        </section>
+                <div class="projects-grid">
 
-        <section class="py-32 bg-white/5">
-            <div class="max-w-4xl mx-auto px-6">
-                <div class="text-center mb-24">
-                    <h2 class="text-sm font-black text-primary tracking-[0.2em] uppercase mb-4">Education</h2>
-                    <h3 class="text-4xl font-bold">ការសិក្សា</h3>
-                </div>
-                <div class="space-y-12">
-                    <div class="relative pl-6 border-l border-white/10 pb-12">
-                        <div
-                            class="absolute left-[-9px] top-0 w-4 h-4 bg-primary rounded-full shadow-[0_0_15px_rgba(59,130,246,0.8)]">
+                    <div class="project-card reveal">
+                        <div class="project-media">
+                            <span class="project-tag">E-Commerce</span>
+                            <img src="./image.png" alt="Zendo Fashion Website">
                         </div>
-                        <span class="text-xs  font-bold text-primary uppercase tracking-widest">2026 - Present</span>
-                        <h4 class="text-2xl font-bold mt-2">Learning Frontend Developer At ETEC CENTER</h4>
-                        <p class="text-gray-400 mt-4  leading-relaxed">រៀនបង្កើតវេបសាយ ដោយប្រើប្រាស់ភាសាកូដ <br>
-                            HTML/CSS/JAVASCRIPT/BOOTSTRAP/VUE.JS</p>
+                        <div class="project-info">
+                            <div>
+                                <h4>ZENDO Fashion Website</h4>
+                                <p>HTML / CSS / BOOTSTRAP</p>
+                            </div>
+                            <a href="https://project-zendo.vercel.app/" target="_blank" class="project-link">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                        </div>
                     </div>
-                    <div class="relative pl-6 border-l border-white/10 pb-12">
-                        <div class="absolute left-[-9px] top-0 w-4 h-4 bg-secondary rounded-full"></div>
-                        <span class="text-xs font-bold text-secondary uppercase tracking-widest">2026 - PRESENT</span>
-                        <h4 class="text-2xl font-bold mt-2">Computer Science At RUPP Year2</h4>
-                        <p class="text-gray-400 mt-4 leading-relaxed">សិក្សាស្រាវជ្រាវលើផ្នែក Hardware Programming និង
-                            Network Infrastructure។</p>
+
+                    <div class="project-card reveal" style="transition-delay:0.1s">
+                        <div class="project-media">
+                            <span class="project-tag">E-Commerce</span>
+                            <img src="./image copy.png" alt="StoreBook Website">
+                        </div>
+                        <div class="project-info">
+                            <div>
+                                <h4>StoreBook Website</h4>
+                                <p>VUE.JS / TAILWIND</p>
+                            </div>
+                            <a href="https://book-store-web-beob.vercel.app/" target="_blank" class="project-link">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                        </div>
                     </div>
-                    <div class="relative pl-6 border-l border-white/10">
-                        <div class="absolute left-[-9px] top-0 w-4 h-4 bg-accent rounded-full"></div>
-                        <span class="text-xs font-bold text-accent uppercase tracking-widest">2024</span>
-                        <h4 class="text-2xl font-bold mt-2">C++/OOP/DATABASE/SQL</h4>
-                        <p class="text-gray-400 mt-4 leading-relaxed">ចាប់ផ្តើមរៀនសូត្រពីមូលដ្ឋានគ្រឹះនៃ C++</p>
+
+                    <div class="project-card reveal"
+                        style="grid-column:1 / -1; max-width:640px; margin:0 auto; width:100%;">
+                        <div class="project-media">
+                            <span class="project-tag">Full-Stack Web</span>
+                            <img src="/ecommerce.png" alt="WEBSS Platform">
+                        </div>
+                        <div class="project-info">
+                            <div>
+                                <h4>WEBSS Platform</h4>
+                                <p>VUE.JS / TAILWINDCSS</p>
+                            </div>
+                            <a href="https://website-ecommerce-sigma.vercel.app/" target="_blank" class="project-link">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </section>
 
-        <section id="contact" class="py-20 md:py-40 px-4 md:px-6 max-w-7xl mx-auto">
-            <div class="glass-card p-6 sm:p-10 md:p-20 rounded-[2.5rem] md:rounded-[4rem] relative overflow-hidden">
-                <div
-                    class="absolute top-0 right-0 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-primary/10 blur-[100px] md:blur-[150px] -z-10">
+        <!-- ================= EDUCATION ================= -->
+        <section id="education">
+            <div class="container" style="max-width:900px;">
+                <div class="section-head reveal">
+                    <span class="eyebrow">Education</span>
+                    <h2 class="khmer">ប្រវត្តិនៃការសិក្សា</h2>
                 </div>
-                <div class="grid lg:grid-cols-2 gap-10 md:gap-20">
-                    <div class="flex flex-col justify-center">
-                        <h2 class="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black mb-6 md:mb-10 leading-tight">
-                            ចាប់ផ្តើមគម្រោង <br> <span class="text-primary italic">របស់អ្នកឥឡូវនេះ!</span>
-                        </h2>
-                        <p class="text-gray-400 text-base md:text-lg mb-8 md:mb-12 max-w-md">
-                            មានគម្រោងក្នុងចិត្តមែនទេ? ផ្ញើសារមកខ្ញុំដើម្បីពិភាក្សាលម្អិត
-                            និងទទួលបានការផ្តល់ជូនដ៏ល្អបំផុត។
+
+                <div class="timeline">
+
+                    <div class="tl-item reveal">
+                        <span class="tl-dot"></span>
+                        <span class="tl-date">2026 — PRESENT</span>
+                        <h4>Frontend Developer Certification</h4>
+                        <p class="org">ETEC CENTER</p>
+                        <p class="desc khmer">
+                            សិក្សាជំនាញឯកទេសបង្កើតវេបសាយទំនើបៗ ដោយប្រើប្រាស់បច្ចេកវិទ្យាចុងក្រោយរួមមាន
+                            <b>HTML5, CSS3, JavaScript (ES6+), Tailwind CSS</b> និង <b>Vue.js 3</b>។
                         </p>
-                        <div class="space-y-6 md:space-y-8">
-                            <div class="flex items-center gap-4 md:gap-6">
-                                <div
-                                    class="w-12 h-12 md:w-16 md:h-16 glass rounded-xl md:rounded-2xl flex items-center justify-center text-primary text-xl md:text-2xl shrink-0">
-                                    <i class="fa-solid fa-envelope"></i>
-                                </div>
-                                <div class="min-w-0">
-                                    <p class="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                        Email Me</p>
-                                    <p class="text-base md:text-xl font-bold truncate">richhatphuk@email.com</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-4 md:gap-6">
-                                <div
-                                    class="w-12 h-12 md:w-16 md:h-16 glass rounded-xl md:rounded-2xl flex items-center justify-center text-accent text-xl md:text-2xl shrink-0">
-                                    <i class="fa-brands fa-telegram"></i>
-                                </div>
-                                <div class="min-w-0">
-                                    <p class="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                        Telegram</p>
-                                    <p class="text-base md:text-xl font-bold">Phuk Richhat</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
-                    <form id="contactForm"
-                        class="space-y-4 md:space-y-6 bg-white/5 p-6 md:p-0 rounded-3xl md:bg-transparent">
-                        <div class="grid md:grid-cols-2 gap-4 md:gap-6">
-                            <div class="space-y-2">
-                                <label
-                                    class="text-xs md:text-sm font-bold uppercase tracking-widest ml-2 text-gray-500">ឈ្មោះពេញ</label>
-                                <input type="text" id="name" required
-                                    class="w-full px-5 py-4 md:px-8 md:py-5 rounded-xl md:rounded-2xl bg-white/5 border border-white/10 focus:border-primary outline-none transition-all text-sm md:text-base">
-                            </div>
-                            <div class="space-y-2">
-                                <label
-                                    class="text-xs md:text-sm font-bold uppercase tracking-widest ml-2 text-gray-500">អ៊ីមែល</label>
-                                <input type="email" id="email" required
-                                    class="w-full px-5 py-4 md:px-8 md:py-5 rounded-xl md:rounded-2xl bg-white/5 border border-white/10 focus:border-primary outline-none transition-all text-sm md:text-base">
-                            </div>
-                        </div>
-                        <div class="space-y-2">
-                            <label
-                                class="text-xs md:text-sm font-bold uppercase tracking-widest ml-2 text-gray-500">សាររបស់អ្នក</label>
-                            <textarea id="message" rows="5" required
-                                class="w-full px-5 py-4 md:px-8 md:py-5 rounded-2xl md:rounded-3xl bg-white/5 border border-white/10 focus:border-primary outline-none transition-all resize-none text-sm md:text-base"></textarea>
-                        </div>
-                        <button type="submit" id="submitBtn"
-                            class="w-full py-4 md:py-6 bg-primary text-white rounded-xl md:rounded-3xl font-black text-base md:text-lg hover:shadow-[0_20px_40px_rgba(59,130,246,0.3)] transition-all flex items-center justify-center gap-3">
-                            ផ្ញើសារឥឡូវនេះ <i class="fa-solid fa-paper-plane text-sm md:text-base"></i>
-                        </button>
-                    </form>
+                    <div class="tl-item reveal">
+                        <span class="tl-dot"></span>
+                        <span class="tl-date">2025 — PRESENT</span>
+                        <h4>Computer Science (Year 2)</h4>
+                        <p class="org">Royal University of Phnom Penh (RUPP)</p>
+                        <p class="desc khmer">
+                            អភិវឌ្ឍសមត្ថភាពស៊ីជម្រៅលើផ្នែក <b>Information Technology</b>
+                            ដោយផ្តោតលើការសរសេរកម្មវិធីកុំព្យូទ័រ,
+                            Object-Oriented Programming (OOP), ទិន្នន័យគ្រឹះ (Database),
+                            និងការសិក្សាស្រាវជ្រាវលើប្រព័ន្ធ
+                            Network Infrastructure។
+                        </p>
+                    </div>
+
+                    <div class="tl-item reveal">
+                        <span class="tl-dot"></span>
+                        <span class="tl-date">2024</span>
+                        <h4>Programming Fundamentals</h4>
+                        <p class="org">Self-Study &amp; Foundation Course</p>
+                        <p class="desc khmer">
+                            ចាប់ផ្តើមបោះជំហានដំបូងចូលក្នុងពិភពបច្ចេកវិទ្យា ដោយសិក្សាស្រាវជ្រាវ
+                            និងកសាងគ្រឹះយ៉ាងរឹងមាំជាមួយភាសា
+                            <b>C++, Object-Oriented Programming (OOP)</b> និងស្វែងយល់ពីការរៀបចំរចនាសម្ព័ន្ធទិន្នន័យ
+                            <b>Relational Database (SQL Server)</b>។
+                        </p>
+                    </div>
+
                 </div>
             </div>
         </section>
+
+        <!-- ================= CONTACT ================= -->
+        <section id="contact">
+            <div class="container">
+                <div class="contact-shell reveal">
+                    <div class="contact-grid">
+
+                        <div class="contact-info">
+                            <span class="eyebrow">Get in Touch</span>
+                            <h2 class="khmer" style="font-size:clamp(1.9rem,3.4vw,2.6rem); margin-top:0.9rem;">
+                                ចាប់ផ្តើមគម្រោង <em style="font-style:italic;color:var(--accent);">របស់អ្នក</em></h2>
+                            <p class="lead khmer">
+                                មានគម្រោង ឬគំនិតច្នៃប្រឌិតក្នុងចិត្តមែនទេ? បងអាចផ្ញើសារមកខ្ញុំដើម្បីពិភាក្សាលម្អិត
+                                និងកសាងវាឱ្យលេចចេញជារូបរាងឡើង។
+                            </p>
+
+                            <div class="contact-row">
+                                <div class="icon"><i class="fa-solid fa-envelope"></i></div>
+                                <div>
+                                    <div class="label">Email Me</div>
+                                    <div class="value">richhatphuk@email.com</div>
+                                </div>
+                            </div>
+                            <div class="contact-row">
+                                <div class="icon"><i class="fa-brands fa-telegram"></i></div>
+                                <div>
+                                    <div class="label">Telegram</div>
+                                    <div class="value">Phuk Richhat</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form id="contactForm">
+                            <div class="form-row">
+                                <div class="field">
+                                    <label class="khmer">ឈ្មោះពេញ</label>
+                                    <input type="text" id="name" required placeholder="John Doe">
+                                </div>
+                                <div class="field">
+                                    <label class="khmer">អ៊ីមែល</label>
+                                    <input type="email" id="email" required placeholder="example@domain.com">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="khmer">សាររបស់អ្នក</label>
+                                <textarea id="message" required placeholder="សរសេរសាររបស់អ្នកនៅទីនេះ..."
+                                    class="khmer"></textarea>
+                            </div>
+                            <button type="submit" id="submitBtn" class="submit-btn">
+                                <span class="khmer">ផ្ញើសារឥឡូវនេះ</span>
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
-    <footer class="py-20 border-t border-white/5">
-        <div class="max-w-7xl mx-auto px-6 text-center">
-            <h2 class="text-3xl font-black mb-10 font-sans tracking-tighter uppercase">Rich<span
-                    class="text-primary">hat</span>.</h2>
-            <div class="flex justify-center gap-8 mb-12">
-                <a href="https://github.com/Chhat1"
-                    class="w-12 h-12 glass rounded-xl flex items-center justify-center hover:bg-primary transition-all text-xl"><i
+    <footer>
+        <div class="container footer-wrap">
+            <div class="footer-logo">Rich<span>hat</span>.</div>
+            <div class="social-row">
+                <a href="https://github.com/Chhat1" target="_blank" class="social-btn"><i
                         class="fa-brands fa-github"></i></a>
-                <a href="https://web.facebook.com/CHHAT0000/"
-                    class="w-12 h-12 glass rounded-xl flex items-center justify-center hover:bg-primary transition-all text-xl"><i
+                <a href="https://web.facebook.com/CHHAT0000/" target="_blank" class="social-btn"><i
                         class="fa-brands fa-facebook"></i></a>
-                <a href="https://t.me/Chhat800"
-                    class="w-12 h-12 glass rounded-xl flex items-center justify-center hover:bg-primary transition-all text-xl"><i
+                <a href="https://t.me/Chhat800" target="_blank" class="social-btn"><i
                         class="fa-brands fa-telegram"></i></a>
             </div>
-            <p class="text-[10px] font-bold text-gray-600 uppercase tracking-[0.1em]">
-                &copy; 2026 Developed with Passion by Phuk Richhat. All Rights Reserved.
-            </p>
+            <p class="copy">© 2026 DEVELOPED BY PHUK RICHHAT. ALL RIGHTS RESERVED.</p>
         </div>
     </footer>
 
     <script>
-        // FIX 7: Initialize AOS
-        AOS.init({ duration: 800, once: true });
+        // Navbar shadow + hire button visibility on scroll
+        const navbar = document.getElementById('navbar');
+        const hireBtn = document.getElementById('hireBtn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 40) {
+                navbar.classList.add('scrolled');
+                hireBtn.style.display = 'inline-flex';
+            } else {
+                navbar.classList.remove('scrolled');
+                hireBtn.style.display = 'none';
+            }
+        });
 
-        // 1. Loading Animation
-        window.addEventListener('load', () => {
-            gsap.to('#loader', {
-                opacity: 0, duration: 1, onComplete: () => {
-                    document.getElementById('loader').style.display = 'none';
-                    // FIX 2: initBackground is now called here after loader finishes
-                    initBackground();
-                    initAnimations();
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+            menuToggle.innerHTML = mobileMenu.classList.contains('open')
+                ? '<i class="fa-solid fa-xmark"></i>'
+                : '<i class="fa-solid fa-bars"></i>';
+        });
+        mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+            mobileMenu.classList.remove('open');
+            menuToggle.innerHTML = '<i class="fa-solid fa-bars"></i>';
+        }));
+
+        // Scroll reveal
+        const revealEls = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in');
+                    revealObserver.unobserve(entry.target);
                 }
             });
-        });
+        }, { threshold: 0.15 });
+        revealEls.forEach(el => revealObserver.observe(el));
 
-        // 2. Custom Cursor Logic
-        const dot = document.getElementById('dot');
-        const outline = document.getElementById('outline');
-        window.addEventListener('mousemove', (e) => {
-            gsap.to(dot, { x: e.clientX, y: e.clientY, duration: 0.1 });
-            gsap.to(outline, { x: e.clientX, y: e.clientY, duration: 0.3 });
-        });
-
-        // 3. Three.js Particles Background — FIX 2: extracted into named function and called above
-        const initBackground = () => {
-            const container = document.getElementById('canvas-container');
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ alpha: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            container.appendChild(renderer.domElement);
-
-            const geometry = new THREE.BufferGeometry();
-            const vertices = [];
-            for (let i = 0; i < 5000; i++) {
-                vertices.push(THREE.MathUtils.randFloatSpread(2000));
-                vertices.push(THREE.MathUtils.randFloatSpread(2000));
-                vertices.push(THREE.MathUtils.randFloatSpread(2000));
-            }
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-
-            const particles = new THREE.Points(geometry, new THREE.PointsMaterial({ color: 0x3b82f6, size: 2 }));
-            scene.add(particles);
-            camera.position.z = 1000;
-
-            const animate = () => {
-                requestAnimationFrame(animate);
-                particles.rotation.y += 0.001;
-                renderer.render(scene, camera);
-            };
-            animate();
-
-            window.addEventListener('resize', () => {
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
-            });
-        };
-
-        // FIX 6: Stars canvas initialization — was completely missing
-        const initStars = () => {
-            const canvas = document.getElementById('stars');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const resize = () => {
-                canvas.width = canvas.offsetWidth;
-                canvas.height = canvas.offsetHeight;
-            };
-            resize();
-            window.addEventListener('resize', resize);
-
-            const stars = Array.from({ length: 120 }, () => ({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                r: Math.random() * 1.5 + 0.3,
-                alpha: Math.random(),
-                speed: Math.random() * 0.005 + 0.002,
-            }));
-
-            const drawStars = () => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                stars.forEach(s => {
-                    s.alpha += s.speed;
-                    if (s.alpha > 1 || s.alpha < 0) s.speed *= -1;
-                    ctx.beginPath();
-                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(255,255,255,${s.alpha * 0.6})`;
-                    ctx.fill();
-                });
-                requestAnimationFrame(drawStars);
-            };
-            drawStars();
-        };
-        initStars();
-
-        // 4. GSAP Scroll Animations
-        gsap.registerPlugin(ScrollTrigger);
-        const initAnimations = () => {
-            gsap.from('#hero-content h1', { y: 100, opacity: 0, duration: 1.5, ease: "power4.out" });
-
-            gsap.from('.skill-item', {
-                scrollTrigger: { trigger: '#skills', start: "top 80%" },
-                y: 50, opacity: 0, stagger: 0.1, duration: 1
-            });
-
-            document.querySelectorAll('.project-card').forEach(card => {
-                gsap.from(card, {
-                    scrollTrigger: { trigger: card, start: "top 90%" },
-                    y: 100, opacity: 0, duration: 1.2
-                });
-            });
-        };
-
-        // 5. Counter Logic
+        // Counters
         const counters = document.querySelectorAll('.counter');
         const countObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const target = +entry.target.dataset.target;
                     let count = 0;
+                    const step = Math.max(target / 60, 0.02);
                     const update = () => {
-                        const inc = target / 100;
+                        count += step;
                         if (count < target) {
-                            count += inc;
                             entry.target.innerText = Math.ceil(count);
-                            setTimeout(update, 20);
-                        } else { entry.target.innerText = target; }
+                            requestAnimationFrame(update);
+                        } else {
+                            entry.target.innerText = target;
+                        }
                     };
                     update();
                     countObserver.unobserve(entry.target);
                 }
             });
-        }, { threshold: 1 });
+        }, { threshold: 0.6 });
         counters.forEach(c => countObserver.observe(c));
 
-        // 6. Telegram Form Logic
+        // Contact form — Telegram delivery
+        // NOTE: for production, move this call to a small server endpoint so the
+        // bot token isn't exposed in client-side source.
         const BOT_TOKEN = '8716769761:AAHygZS-AZQFhp1AI-IsnepSvmjzXVlQCbI';
         const CHAT_ID = '7176789176';
 
         document.getElementById('contactForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
+            const original = btn.innerHTML;
             const data = {
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
                 message: document.getElementById('message').value
             };
 
-            btn.innerHTML = 'Sending... <i class="fa-solid fa-spinner animate-spin"></i>';
+            btn.disabled = true;
+            btn.innerHTML = '<span class="khmer">កំពុងផ្ញើ...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
 
-            const text = `📬 *New Message from Portfolio*\n\n👤 *Name:* ${data.name}\n📧 *Email:* ${data.email}\n💬 *Message:* ${data.message}`;
+            const text = `📬 New Message from Portfolio\n\n👤 Name: ${data.name}\n📧 Email: ${data.email}\n💬 Message: ${data.message}`;
 
             try {
                 const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: CHAT_ID, text: text, parse_mode: 'Markdown' })
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: text })
                 });
                 if (response.ok) {
-                    alert('សារត្រូវបានផ្ញើជោគជ័យ!');
+                    btn.innerHTML = '<span class="khmer">បានផ្ញើជោគជ័យ!</span> <i class="fa-solid fa-check"></i>';
                     e.target.reset();
+                } else {
+                    throw new Error('failed');
                 }
             } catch (err) {
-                alert('មានបញ្ហាក្នុងការផ្ញើសារ!');
+                btn.innerHTML = '<span class="khmer">មានបញ្ហា សូមព្យាយាមម្តងទៀត</span>';
             }
-            btn.innerHTML = 'ផ្ញើសារឥឡូវនេះ <i class="fa-solid fa-paper-plane"></i>';
-        });
-
-        // 7. Navbar Scroll Effect
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                nav.classList.add('py-4');
-                nav.querySelector('nav').classList.add('bg-dark/80');
-            } else {
-                nav.classList.remove('py-4');
-                nav.querySelector('nav').classList.remove('bg-dark/80');
-            }
+            setTimeout(() => { btn.disabled = false; btn.innerHTML = original; }, 2400);
         });
     </script>
 </body>
